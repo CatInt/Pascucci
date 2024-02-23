@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tomtom="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/home"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.tomtom.sdk.map.display.ui.MapFragment"
+        tomtom:mapKey="@string/tom_tom_api_key"
+        tomtom:cameraPositionZoom="8"
+        tomtom:mapPaddingBottom="960"
+        tomtom:mapPaddingLeft="10"
+        tomtom:mapPaddingRight="10"
+        tomtom:mapPaddingTop="10"
+        tomtom:cameraTilt="45"
+        tomtom:cameraRotation="20"
+        tomtom:cameraPositionLatitude="52.379189"
+        tomtom:cameraPositionLongitude="4.899431"/>
+
+</FrameLayout>

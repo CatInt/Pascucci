@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="dashboard_background_color">#212121</color>
+    <color name="search_view_text_color">#4DFFFFFF</color>
+    <color name="search_view_background_color">#EFEFEF</color>
+    <color name="search_icon_color">#4DFFFFFF</color>
+</resources>
