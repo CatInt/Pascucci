@@ -23,7 +23,8 @@ class TomTomSearchSource @Inject constructor(
             val search = SearchOptions(
                 query = query,
                 geoBias = current,
-                searchAreas = setOf(circleGeometry)
+                searchAreas = setOf(circleGeometry),
+                limit = 10
             ).let {
                 tomtomApi.search(it)
             }

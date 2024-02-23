@@ -8,10 +8,14 @@ import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.options.calculation.AlternativeRoutesOptions
 import com.tomtom.sdk.routing.options.calculation.CostModel
 import com.tomtom.sdk.routing.options.calculation.RouteType
+import com.tomtom.sdk.routing.options.guidance.ExtendedSections
+import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
+import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
 import com.tomtom.sdk.routing.route.Route
 import com.tomtom.sdk.vehicle.Vehicle
 import io.pascucci.repos.AsyncResult
 import timber.log.Timber
+import java.util.Locale
 import javax.inject.Inject
 
 class TomTomRouteSource @Inject constructor(
@@ -22,7 +26,12 @@ class TomTomRouteSource @Inject constructor(
             itinerary = Itinerary(from, to),
             costModel = CostModel(routeType = RouteType.Efficient),
             vehicle = Vehicle.Car(),
-            alternativeRoutesOptions = AlternativeRoutesOptions(maxAlternatives = 2)
+            alternativeRoutesOptions = AlternativeRoutesOptions(maxAlternatives = 2),
+            guidanceOptions = GuidanceOptions(
+                language = Locale.ENGLISH,
+                phoneticsType = InstructionPhoneticsType.Ipa,
+                extendedSections = ExtendedSections.All
+            )
         )
 
         val result = routePlanner.planRoute(routePlanningOptions!!)

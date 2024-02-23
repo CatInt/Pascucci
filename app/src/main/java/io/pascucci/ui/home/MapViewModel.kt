@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
+import com.tomtom.quantity.Distance
+import com.tomtom.quantity.Speed
 import com.tomtom.sdk.common.UniqueId
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.GeoPoint
@@ -28,12 +30,16 @@ import com.tomtom.sdk.map.display.route.Instruction
 import com.tomtom.sdk.map.display.route.RouteClickListener
 import com.tomtom.sdk.map.display.route.RouteOptions
 import com.tomtom.sdk.navigation.ActiveRouteChangedListener
+import com.tomtom.sdk.navigation.GuidanceUpdatedListener
 import com.tomtom.sdk.navigation.NavigationState
 import com.tomtom.sdk.navigation.ProgressUpdatedListener
 import com.tomtom.sdk.navigation.RouteAddedListener
 import com.tomtom.sdk.navigation.RouteAddedReason
 import com.tomtom.sdk.navigation.RouteRemovedListener
 import com.tomtom.sdk.navigation.TomTomNavigation
+import com.tomtom.sdk.navigation.guidance.GuidanceAnnouncement
+import com.tomtom.sdk.navigation.guidance.InstructionPhase
+import com.tomtom.sdk.navigation.guidance.instruction.GuidanceInstruction
 import com.tomtom.sdk.routing.route.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.pascucci.R
@@ -42,6 +48,8 @@ import io.pascucci.repos.route.IRouteRepository
 import io.pascucci.repos.search.ISearchRepository
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 // This is shared ViewModel interacting with navigation and map
 @HiltViewModel
@@ -52,7 +60,7 @@ class MapViewModel @Inject internal constructor(
     searchRepo: ISearchRepository,
 ) : ViewModel() {
 
-    val tomTomNavigation get() =  tomTomNavigationLazy.value
+    val tomTomNavigation get() = tomTomNavigationLazy.value
 
     private val _observableMap = MutableLiveData<TomTomMap>()
     private val observableMap: LiveData<TomTomMap> = _observableMap
@@ -140,6 +148,7 @@ class MapViewModel @Inject internal constructor(
         tomTomNavigation.addActiveRouteChangedListener(activeRouteChangedListener)
         tomTomNavigation.addRouteAddedListener(routeAddedListener)
         tomTomNavigation.addRouteRemovedListener(routeRemovedListener)
+        tomTomNavigation.addGuidanceUpdatedListener(guidanceUpdatedListener)
     }
 
     private fun unbindNavigationToMap() {
@@ -147,6 +156,7 @@ class MapViewModel @Inject internal constructor(
         tomTomNavigation.removeActiveRouteChangedListener(activeRouteChangedListener)
         tomTomNavigation.removeRouteAddedListener(routeAddedListener)
         tomTomNavigation.removeRouteRemovedListener(routeRemovedListener)
+        tomTomNavigation.removeGuidanceUpdatedListener(guidanceUpdatedListener)
     }
 
     private var cameraChangeListener: CameraChangeListener? = null
@@ -246,7 +256,12 @@ class MapViewModel @Inject internal constructor(
 
     private fun setSimulationLocationProviderToNavigation(route: Route) {
         val routeGeoLocations = route.geometry.map { GeoLocation(it) }
-        val simulationStrategy = InterpolationStrategy(routeGeoLocations)
+        val simulationStrategy = InterpolationStrategy(
+            locations = routeGeoLocations,
+//            startDelay = Duration.ZERO,
+            broadcastDelay = 100.toDuration(DurationUnit.MILLISECONDS),
+            currentSpeed = Speed.Companion.kilometersPerHour(60)
+        )
         val simulationProvider = SimulationLocationProvider.create(strategy = simulationStrategy)
         tomTomNavigation.locationProvider = simulationProvider
         simulationProvider.enable()
@@ -260,6 +275,33 @@ class MapViewModel @Inject internal constructor(
     private val routeRemovedListener by lazy {
         RouteRemovedListener { route, _ ->
             displayMap.routes.find { it.tag == route.id.toString() }?.remove()
+        }
+    }
+
+    private val _guideMessage = MutableLiveData<String>()
+    val guideMessage: LiveData<String> = _guideMessage
+    private val guidanceUpdatedListener by lazy {
+        object : GuidanceUpdatedListener {
+            override fun onAnnouncementGenerated(
+                announcement: GuidanceAnnouncement,
+                shouldPlay: Boolean
+            ) {
+                if (shouldPlay) {
+                    _guideMessage.postValue(announcement.plainTextMessage)
+                }
+            }
+
+            override fun onDistanceToNextInstructionChanged(
+                distance: Distance,
+                instructions: List<GuidanceInstruction>,
+                currentPhase: InstructionPhase
+            ) {
+                // Do nothing
+            }
+
+            override fun onInstructionsChanged(instructions: List<GuidanceInstruction>) {
+                // Do nothing
+            }
         }
     }
 
