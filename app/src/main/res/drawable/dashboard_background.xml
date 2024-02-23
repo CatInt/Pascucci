@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ /********************************************************************************
+  ~  ** Copyright (C), 2014-2021, OnePlus Mobile Comm Corp., Ltd
+  ~  ** All rights reserved.
+  ~  ********************************************************************************/
+  -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="16dp" />
+    <solid android:color="#ffffff" />
+</shape>

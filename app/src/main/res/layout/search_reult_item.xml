@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ /********************************************************************************
+  ~  ** Copyright (C), 2014-2021, OnePlus Mobile Comm Corp., Ltd
+  ~  ** All rights reserved.
+  ~  ********************************************************************************/
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="clickListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="viewModel"
+            type="io.pascucci.ui.search.SearchResultItemViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{clickListener}"
+        android:paddingHorizontal="@dimen/list_item_horizontal_padding"
+        android:paddingBottom="@dimen/list_view_vertical_padding">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:contentDescription="@{viewModel.name}" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="72dp"
+            android:paddingEnd="@dimen/list_item_internal_horizontal_space"
+            android:text="@{viewModel.name}" />
+    </FrameLayout>
+</layout>
