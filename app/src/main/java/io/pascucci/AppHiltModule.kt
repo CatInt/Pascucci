@@ -105,16 +105,16 @@ class AppHiltModule {
         navigationTileStore: NavigationTileStore,
         locationProvider: LocationProvider,
         routePlanner: RoutePlanner,
-    ): TomTomNavigation = Configuration(
-        context,
-        navigationTileStore,
-        locationProvider,
-        routePlanner
-    ).let {
-        OnlineTomTomNavigationFactory.create(it)
+    ): Lazy<@JvmSuppressWildcards TomTomNavigation> = lazy {
+        Configuration(
+            context,
+            navigationTileStore,
+            locationProvider,
+            routePlanner
+        ).let {
+            OnlineTomTomNavigationFactory.create(it)
+        }
     }
-
-
 }
 
 @InstallIn(SingletonComponent::class)

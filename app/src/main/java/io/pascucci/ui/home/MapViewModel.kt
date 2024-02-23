@@ -48,9 +48,11 @@ import javax.inject.Inject
 class MapViewModel @Inject internal constructor(
     private val locationProvider: LocationProvider,
     private val routeRepo: IRouteRepository,
-    val tomTomNavigation: TomTomNavigation,
+    private val tomTomNavigationLazy: Lazy<@JvmSuppressWildcards TomTomNavigation>,
     searchRepo: ISearchRepository,
 ) : ViewModel() {
+
+    val tomTomNavigation get() =  tomTomNavigationLazy.value
 
     private val _observableMap = MutableLiveData<TomTomMap>()
     private val observableMap: LiveData<TomTomMap> = _observableMap
@@ -109,7 +111,7 @@ class MapViewModel @Inject internal constructor(
         displayMap.addRouteClickListener(routeClickListener)
     }
 
-    fun centerOnCurrent() {
+    private fun centerOnCurrent() {
         (locationProvider as PascucciLocationProvider).switchToOrigin()
         // zoom to current location at city level
         var onLocationUpdateListener: OnLocationUpdateListener? = null
