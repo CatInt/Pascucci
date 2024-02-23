@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tomtom="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/home"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/map_fragment_container"
+    <FrameLayout
+        android:id="@+id/home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.tomtom.sdk.map.display.ui.MapFragment"
-        tomtom:mapKey="@string/tom_tom_api_key"
-        tomtom:cameraPositionZoom="8"
-        tomtom:mapPaddingBottom="960"
-        tomtom:mapPaddingLeft="10"
-        tomtom:mapPaddingRight="10"
-        tomtom:mapPaddingTop="10"
-        tomtom:cameraTilt="45"
-        tomtom:cameraRotation="20"
-        tomtom:cameraPositionLatitude="52.379189"
-        tomtom:cameraPositionLongitude="4.899431"/>
+        tools:context="io.pascucci.ui.home.HomeFragment">
 
-</FrameLayout>
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map_fragment_container"
+            android:name="com.tomtom.sdk.map.display.ui.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tomtom:cameraPositionLatitude="52.379189"
+            tomtom:cameraPositionLongitude="4.899431"
+            tomtom:cameraPositionZoom="8"
+            tomtom:cameraRotation="20"
+            tomtom:cameraTilt="45"
+            tomtom:mapKey="@string/tom_tom_api_key"
+            tomtom:mapPaddingBottom="960"
+            tomtom:mapPaddingLeft="10"
+            tomtom:mapPaddingRight="10"
+            tomtom:mapPaddingTop="10" />
+
+        <Space
+            android:id="@+id/snackbar_anchor"
+            android:layout_width="match_parent"
+            android:layout_height="182dp"
+            android:layout_gravity="bottom|center_horizontal" />
+
+    </FrameLayout>
+</layout>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="current_location_margin_bottom" tools:override="true">128dp</dimen>
+    <dimen name="current_location_margin_bottom" tools:override="true">192dp</dimen>
     <dimen name="compass_margin" tools:override="true">42dp</dimen>
     <dimen name="list_view_vertical_padding">16dp</dimen>
     <dimen name="list_item_horizontal_padding">24dp</dimen>
     <dimen name="list_item_internal_horizontal_space">10dp</dimen>
+    <dimen name="panel_collapsed_height">256dp</dimen>
 </resources>

@@ -7,13 +7,13 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     app:layout_anchorGravity="bottom"
-    app:umanoAnchorPoint="0.6"
+    app:umanoAnchorPoint="1"
     app:umanoClipPanel="false"
     app:umanoDragView="@+id/dashboard_container"
     app:umanoFadeColor="@android:color/transparent"
     app:umanoInitialState="collapsed"
     app:umanoOverlay="true"
-    app:umanoPanelHeight="100dp"
+    app:umanoPanelHeight="@dimen/panel_collapsed_height"
     app:umanoScrollableView="@+id/search_result_view"
     app:umanoShadowHeight="0dp"
     tools:context=".MainActivity">
@@ -27,7 +27,6 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/dashboard_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="200dp" />
+        android:layout_height="480dp" />
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

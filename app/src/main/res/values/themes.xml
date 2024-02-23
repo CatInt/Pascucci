@@ -16,8 +16,9 @@
 
     <style name="SearchView" parent="Widget.AppCompat.SearchView">
         <item name="android:textColor">?android:textColorSecondary</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:lineHeight">16dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:text">14sp</item>
+        <item name="android:lineHeight">18dp</item>
         <item name="android:background">@drawable/search_view_background</item>
         <item name="android:backgroundTint">@color/search_view_background_color</item>
         <item name="queryHint">@string/hint_input_destination</item>
