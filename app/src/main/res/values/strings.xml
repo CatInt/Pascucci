@@ -3,4 +3,8 @@
     <string name="hint_input_destination">What\'s your destination?</string>
     <string name="start_navigation">Start Navigation</string>
     <string name="location_permission_denied">Please enable location permission</string>
+    <string name="route_type_car">Route type is car</string>
+    <string name="route_type_bus">Route type is bus</string>
+    <string name="route_type_bike">Route type is bike</string>
+    <string name="route_type_walk">Route type is walk</string>
 </resources>

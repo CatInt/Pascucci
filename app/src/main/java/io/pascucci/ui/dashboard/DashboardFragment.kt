@@ -17,7 +17,7 @@ import com.tomtom.sdk.routing.route.Route
 import dagger.hilt.android.AndroidEntryPoint
 import io.pascucci.R
 import io.pascucci.databinding.FragmentDashboardBinding
-import io.pascucci.repos.route.TomTomRouteSource
+import io.pascucci.repos.route.IRouteRepository
 import io.pascucci.ui.home.MapViewModel
 import io.pascucci.ui.info.InfoFragment
 import io.pascucci.ui.search.SearchFragment
@@ -89,7 +89,7 @@ class DashboardFragment : Fragment() {
 
     private fun startNavigation(route: Route) {
         navigationFragment.setTomTomNavigation(homeViewModel.tomTomNavigation)
-        val routePlan = RoutePlan(route, TomTomRouteSource.routePlanningOptions!!)
+        val routePlan = RoutePlan(route, IRouteRepository.routePlanningOptions!!)
         navigationFragment.startNavigation(routePlan)
         navigationFragment.addNavigationListener(navigationListener)
         homeViewModel.startNavigation(route)

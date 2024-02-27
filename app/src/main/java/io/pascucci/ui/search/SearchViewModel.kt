@@ -3,6 +3,7 @@ package io.pascucci.ui.search
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.tomtom.sdk.location.LocationProvider
+import com.tomtom.sdk.vehicle.VehicleType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.pascucci.data.Location
 import io.pascucci.repos.route.IRouteRepository
@@ -19,16 +20,21 @@ class SearchViewModel @Inject internal constructor(
 
     val listAdapter = SearchResultListAdapter { dest ->
         locationProvider.lastKnownLocation?.position?.let { from ->
-            routeRepo.plan(from, dest.geo)
+            routeRepo.plan(from, dest.geo, null)
         }
     }
 
     val searchResults: LiveData<List<Location>> = searchRepo.destinationsObservable
+    val vehicleType: LiveData<VehicleType> = routeRepo.vehicleTypeObservable
 
     fun search(query: String) {
         if (query.isNotEmpty()) {
             Timber.d("Search $query")
             searchRepo.search(query)
         }
+    }
+
+    fun setCurrentRouteType(type: VehicleType) {
+        routeRepo.setVehicleType(type)
     }
 }

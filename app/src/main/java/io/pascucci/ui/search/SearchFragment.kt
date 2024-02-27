@@ -1,5 +1,6 @@
 package io.pascucci.ui.search
 
+import android.graphics.PorterDuff
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import com.tomtom.sdk.vehicle.VehicleType
 import dagger.hilt.android.AndroidEntryPoint
 import io.pascucci.R
 import io.pascucci.databinding.FragmentSearchBinding
@@ -26,6 +28,8 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
     private lateinit var binding: FragmentSearchBinding
     private lateinit var viewModel: SearchViewModel
 
+    private lateinit var routeTypeButtons: Map<VehicleType, View>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
@@ -40,6 +44,7 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
         ).let {
             binding = it
             binding.viewModel = viewModel
+            binding.clickListener = onRouteTypeClickListener
             binding.root
         }
     }
@@ -56,6 +61,27 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
 
         viewModel.searchResults.observe(viewLifecycleOwner) { locations ->
             viewModel.listAdapter.submitList(locations)
+            binding.searchResultView.visibility = View.VISIBLE
+            binding.routeTypeSelection.visibility = View.INVISIBLE
+        }
+
+        routeTypeButtons = mapOf(
+            VehicleType.Pedestrian to binding.walk,
+            VehicleType.Bicycle to binding.bike,
+            VehicleType.Bus to binding.bus,
+            VehicleType.Car to binding.car
+        )
+
+        viewModel.vehicleType.observe(viewLifecycleOwner) { type ->
+            binding.searchResultView.visibility = View.INVISIBLE
+            binding.routeTypeSelection.visibility = View.VISIBLE
+            routeTypeButtons.forEach { (key, v) ->
+                v.backgroundTintMode = if (type == key) {
+                    PorterDuff.Mode.SRC
+                } else {
+                    PorterDuff.Mode.DST
+                }
+            }
         }
     }
 
@@ -65,6 +91,16 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
             else -> SlidingUpPanelLayout.PanelState.COLLAPSED
         }
         slidingPanelStateHelper.slidingUpPanelLayout?.panelState = state
+    }
+
+    private val onRouteTypeClickListener by lazy {
+        View.OnClickListener { view ->
+            routeTypeButtons.firstNotNullOf {
+                if (it.value == view) it.key else null
+            }.let { type ->
+                viewModel.setCurrentRouteType(type)
+            }
+        }
     }
 
     companion object {

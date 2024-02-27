@@ -41,12 +41,14 @@ import com.tomtom.sdk.navigation.guidance.GuidanceAnnouncement
 import com.tomtom.sdk.navigation.guidance.InstructionPhase
 import com.tomtom.sdk.navigation.guidance.instruction.GuidanceInstruction
 import com.tomtom.sdk.routing.route.Route
+import com.tomtom.sdk.vehicle.VehicleType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.pascucci.R
 import io.pascucci.data.PascucciLocationProvider
 import io.pascucci.repos.route.IRouteRepository
 import io.pascucci.repos.search.ISearchRepository
 import kotlinx.coroutines.flow.combine
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -98,7 +100,11 @@ class MapViewModel @Inject internal constructor(
                 routesCache[displayRoute.id] = it
             }
         }.also {
-            displayMap.zoomToRoutes(24)
+            if (it.isNotEmpty()) {
+                displayMap.zoomToRoutes(24)
+            } else {
+                Timber.w("No route found!")
+            }
         }
     }.asLiveData()
 
@@ -187,7 +193,7 @@ class MapViewModel @Inject internal constructor(
     }
 
     private val progressUpdatedListener = ProgressUpdatedListener {
-        displayMap.routes.first().progress = it.distanceAlongRoute
+        displayMap.routes.firstOrNull()?.progress = it.distanceAlongRoute
     }
 
     private val isNavigationIdle get() = tomTomNavigation.navigationState == NavigationState.Idle
@@ -196,7 +202,7 @@ class MapViewModel @Inject internal constructor(
         MapLongClickListener { pos ->
             if (isNavigationIdle) {
                 displayMap.clear()
-                routeRepo.plan(currentPos!!, pos)
+                routeRepo.plan(currentPos!!, pos, null)
             }
             true
         }
@@ -205,7 +211,7 @@ class MapViewModel @Inject internal constructor(
     private val markerClickListener by lazy {
         MarkerClickListener { marker ->
             if (isNavigationIdle) {
-                routeRepo.plan(currentPos!!, marker.coordinate)
+                routeRepo.plan(currentPos!!, marker.coordinate, null)
                 displayMap.removeMarkers()
             }
         }
@@ -253,14 +259,23 @@ class MapViewModel @Inject internal constructor(
             }
         }
     }
-
+    private val simulatedSpeed get() =  Speed.kilometersPerHour(
+        when (IRouteRepository.vehicleType) {
+            VehicleType.Pedestrian -> 3
+            VehicleType.Bicycle -> 30
+            VehicleType.Bus -> 45
+            VehicleType.Car -> 60
+            else -> 0
+        }
+    )
     private fun setSimulationLocationProviderToNavigation(route: Route) {
         val routeGeoLocations = route.geometry.map { GeoLocation(it) }
         val simulationStrategy = InterpolationStrategy(
             locations = routeGeoLocations,
 //            startDelay = Duration.ZERO,
             broadcastDelay = 100.toDuration(DurationUnit.MILLISECONDS),
-            currentSpeed = Speed.Companion.kilometersPerHour(60)
+            currentSpeed = simulatedSpeed,
+
         )
         val simulationProvider = SimulationLocationProvider.create(strategy = simulationStrategy)
         tomTomNavigation.locationProvider = simulationProvider
