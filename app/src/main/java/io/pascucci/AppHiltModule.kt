@@ -20,6 +20,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.pascucci.data.PascucciLocationProvider
@@ -88,8 +89,12 @@ class AppHiltModule {
     fun provideTomTomPlanner(
         @ApplicationContext context: Context
     ): RoutePlanner = OnlineRoutePlanner.create(context, BuildConfig.TOMTOM_API_KEY)
+}
 
-    @Singleton
+@InstallIn(ViewModelComponent::class)
+@Module
+class NavigationModules {
+
     @Provides
     fun provideTomTomNavigationTileStore(
         @ApplicationContext context: Context
@@ -98,7 +103,6 @@ class AppHiltModule {
         navigationTileStoreConfig = NavigationTileStoreConfiguration(BuildConfig.TOMTOM_API_KEY)
     )
 
-    @Singleton
     @Provides
     fun provideTomTomNavigation(
         @ApplicationContext context: Context,

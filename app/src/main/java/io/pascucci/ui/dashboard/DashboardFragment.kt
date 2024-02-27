@@ -12,6 +12,7 @@ import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.navigation.RoutePlan
 import com.tomtom.sdk.navigation.ui.NavigationFragment
 import com.tomtom.sdk.navigation.ui.NavigationFragment.NavigationListener
+import com.tomtom.sdk.navigation.ui.NavigationUiOptions
 import com.tomtom.sdk.routing.route.Route
 import dagger.hilt.android.AndroidEntryPoint
 import io.pascucci.R
@@ -34,7 +35,19 @@ class DashboardFragment : Fragment() {
 
     private val searchFragment get() = childFragmentManager.findFragmentById(R.id.search_fragment_container) as SearchFragment
     private val infoFragment get() = childFragmentManager.findFragmentById(R.id.info_fragment_container) as InfoFragment
-    private val navigationFragment get() = childFragmentManager.findFragmentById(R.id.navigation_fragment_container) as NavigationFragment
+    private val navigationFragment: NavigationFragment
+        get() {
+            return childFragmentManager.findFragmentById(R.id.navigation_fragment_container)?.let {
+                it as NavigationFragment
+            } ?: NavigationFragment.newInstance(
+                NavigationUiOptions(
+                    keepInBackground = true
+                )
+            ).also {
+                childFragmentManager.beginTransaction()
+                    .replace(R.id.navigation_fragment_container, it).commitNow()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
