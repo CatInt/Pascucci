@@ -73,6 +73,9 @@ class MapViewModel @Inject internal constructor(
         observableMap.asFlow(),
         searchRepo.destinationsObservable.asFlow()
     ) { displayMap, destinations ->
+        if (!isNavigationIdle) {
+            return@combine emptyList()
+        }
         displayMap.clear()
         destinations.map {
             val marker = it.run {
@@ -84,7 +87,11 @@ class MapViewModel @Inject internal constructor(
             }
             displayMap.addMarker(marker)
         }.also {
-            displayMap.zoomToMarkers()
+            if (it.isNotEmpty()) {
+                displayMap.zoomToMarkers()
+            } else {
+                Timber.w("No markers!")
+            }
         }
     }.asLiveData()
 
