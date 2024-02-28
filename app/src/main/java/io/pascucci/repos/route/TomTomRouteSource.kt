@@ -6,8 +6,6 @@ import com.tomtom.sdk.routing.RoutePlanner
 import com.tomtom.sdk.routing.options.Itinerary
 import com.tomtom.sdk.routing.options.RoutePlanningOptions
 import com.tomtom.sdk.routing.options.calculation.AlternativeRoutesOptions
-import com.tomtom.sdk.routing.options.calculation.CostModel
-import com.tomtom.sdk.routing.options.calculation.RouteType
 import com.tomtom.sdk.routing.options.guidance.ExtendedSections
 import com.tomtom.sdk.routing.options.guidance.GuidanceOptions
 import com.tomtom.sdk.routing.options.guidance.InstructionPhoneticsType
@@ -23,6 +21,7 @@ import javax.inject.Inject
 class TomTomRouteSource @Inject constructor(
     private val routePlanner: RoutePlanner
 ) : IRoutePlanner {
+    @Suppress("DEPRECATION")
     override suspend fun plan(
         from: GeoPoint,
         to: GeoPoint,
@@ -30,7 +29,7 @@ class TomTomRouteSource @Inject constructor(
     ): AsyncResult<List<Route>> {
         val routePlanningOptions = RoutePlanningOptions(
             itinerary = Itinerary(from, to),
-            costModel = CostModel(routeType = RouteType.Fast),
+//            costModel = CostModel(routeType = RouteType.Fast),
             vehicle = type.toVehicle(),
             alternativeRoutesOptions = AlternativeRoutesOptions(maxAlternatives = 2),
             guidanceOptions = GuidanceOptions(

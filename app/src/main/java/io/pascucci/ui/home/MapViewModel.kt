@@ -50,8 +50,6 @@ import io.pascucci.repos.search.ISearchRepository
 import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 // This is shared ViewModel interacting with navigation and map
 @HiltViewModel
@@ -61,7 +59,6 @@ class MapViewModel @Inject internal constructor(
     private val tomTomNavigationLazy: Lazy<@JvmSuppressWildcards TomTomNavigation>,
     searchRepo: ISearchRepository,
 ) : ViewModel() {
-
     val tomTomNavigation get() = tomTomNavigationLazy.value
 
     private val _observableMap = MutableLiveData<TomTomMap>()
@@ -100,6 +97,9 @@ class MapViewModel @Inject internal constructor(
         observableMap.asFlow(),
         routeRepo.routesObservable.asFlow()
     ) { displayMap, routes ->
+        if (routes.isEmpty() || !isNavigationIdle) {
+            return@combine emptyList()
+        }
         displayMap.clear()
         routesCache.clear()
         routes.reversed().map {
@@ -162,6 +162,7 @@ class MapViewModel @Inject internal constructor(
         tomTomNavigation.addRouteAddedListener(routeAddedListener)
         tomTomNavigation.addRouteRemovedListener(routeRemovedListener)
         tomTomNavigation.addGuidanceUpdatedListener(guidanceUpdatedListener)
+//        tomTomNavigation.addDestinationArrivalListener(arrivalListener)
     }
 
     private fun unbindNavigationToMap() {
@@ -170,6 +171,7 @@ class MapViewModel @Inject internal constructor(
         tomTomNavigation.removeRouteAddedListener(routeAddedListener)
         tomTomNavigation.removeRouteRemovedListener(routeRemovedListener)
         tomTomNavigation.removeGuidanceUpdatedListener(guidanceUpdatedListener)
+//        tomTomNavigation.removeDestinationArrivalListener(arrivalListener)
     }
 
     private var cameraChangeListener: CameraChangeListener? = null
@@ -182,7 +184,6 @@ class MapViewModel @Inject internal constructor(
         displayMap.enableLocationMarker(LocationMarkerOptions(LocationMarkerOptions.Type.Chevron))
         setMapMatchedLocationProvider()
         setSimulationLocationProviderToNavigation(navigationRouteObservable.value!!)
-        setMapNavigationPadding()
     }
 
     fun onNavigationStopped() {
@@ -195,15 +196,12 @@ class MapViewModel @Inject internal constructor(
         centerOnCurrent()
     }
 
-    private fun setMapNavigationPadding() {
-        // Do nothing for now
-    }
-
     private val progressUpdatedListener = ProgressUpdatedListener {
+        Timber.d("progressUpdated? ${it.distanceAlongRoute} ${it.remainingDistance}")
         displayMap.routes.firstOrNull()?.progress = it.distanceAlongRoute
     }
 
-    private val isNavigationIdle get() = tomTomNavigation.navigationState == NavigationState.Idle
+    val isNavigationIdle get() = tomTomNavigation.navigationState == NavigationState.Idle
 
     private val mapLongClickListener by lazy {
         MapLongClickListener { pos ->
@@ -257,32 +255,35 @@ class MapViewModel @Inject internal constructor(
 
     private val activeRouteChangedListener by lazy {
         ActiveRouteChangedListener { route ->
-            displayMap.routes.forEach {
-                if (it.tag == route.id.toString()) {
-                    it.color = RouteOptions.DEFAULT_COLOR
-                } else {
-                    it.color = Color.GRAY
-                }
-            }
+            displayMap.removeRoutes()
+            drawRoute(route)
+//            displayMap.routes.forEach {
+//                if (it.tag == route.id.toString()) {
+//                    it.color = RouteOptions.DEFAULT_COLOR
+//                } else {
+//                    it.color = Color.GRAY
+//                }
+//            }
         }
     }
-    private val simulatedSpeed get() =  Speed.kilometersPerHour(
-        when (IRouteRepository.vehicleType) {
-            VehicleType.Pedestrian -> 3
-            VehicleType.Bicycle -> 30
-            VehicleType.Bus -> 45
-            VehicleType.Car -> 60
-            else -> 0
-        }
-    )
+    private val simulatedSpeed
+        get() = Speed.kilometersPerHour(
+            when (IRouteRepository.vehicleType) {
+                VehicleType.Pedestrian -> 3
+                VehicleType.Bicycle -> 30
+                VehicleType.Bus -> 45
+                VehicleType.Car -> 60
+                else -> 0
+            }
+        )
+
     private fun setSimulationLocationProviderToNavigation(route: Route) {
         val routeGeoLocations = route.geometry.map { GeoLocation(it) }
         val simulationStrategy = InterpolationStrategy(
             locations = routeGeoLocations,
 //            startDelay = Duration.ZERO,
-            broadcastDelay = 100.toDuration(DurationUnit.MILLISECONDS),
+//            broadcastDelay = 100.toDuration(DurationUnit.MILLISECONDS),
             currentSpeed = simulatedSpeed,
-
         )
         val simulationProvider = SimulationLocationProvider.create(strategy = simulationStrategy)
         tomTomNavigation.locationProvider = simulationProvider
@@ -326,6 +327,13 @@ class MapViewModel @Inject internal constructor(
             }
         }
     }
+
+    // this api doesn't work
+//    private val arrivalListener by lazy {
+//        DestinationArrivalListener {
+//            _navigationRouteObservable.postValue(null)
+//        }
+//    }
 
     companion object {
 
