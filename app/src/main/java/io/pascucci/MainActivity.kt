@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import com.tomtom.sdk.location.LocationProvider
 import dagger.hilt.android.AndroidEntryPoint
 import io.pascucci.ui.dashboard.DashboardFragment
 import io.pascucci.ui.dashboard.SlidingPanelStateHelper
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var slidingPanelStateHelper: SlidingPanelStateHelper
+    @Inject
+    lateinit var locationProvider: LocationProvider
     private val homeFragment get() = supportFragmentManager.findFragmentById(R.id.home_container) as HomeFragment
     private val dashboardFragment get() = supportFragmentManager.findFragmentById(R.id.dashboard_container) as DashboardFragment?
 
@@ -45,18 +48,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    override fun onDestroy() {
+        locationProvider.disable()
+        super.onDestroy()
+    }
+
     private fun setupSliding() {
         slidingPanelStateHelper.slidingUpPanelLayout = findViewById(R.id.activity_main)
         slidingPanelStateHelper.setSlidingEnable(false)
     }
 
-    private var hasCalled = false
     private fun setupUi() {
-        if (hasCalled)
+        if (homeFragment.hasSetup)
         {
             return
         }
-        hasCalled = true
         homeFragment.setupMapFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.dashboard_container, DashboardFragment()).commitNow()

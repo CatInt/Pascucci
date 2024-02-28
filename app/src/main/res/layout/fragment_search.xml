@@ -49,7 +49,7 @@
             android:alignmentMode="alignBounds"
             android:columnCount="4"
             android:layoutMode="clipBounds"
-            android:paddingVertical="32dp"
+            android:paddingVertical="24dp"
             android:useDefaultMargins="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

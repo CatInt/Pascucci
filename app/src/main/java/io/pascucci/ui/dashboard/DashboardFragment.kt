@@ -1,12 +1,13 @@
 package io.pascucci.ui.dashboard
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.tomtom.sdk.map.display.camera.CameraTrackingMode
 import com.tomtom.sdk.navigation.RoutePlan
@@ -30,8 +31,8 @@ class DashboardFragment : Fragment() {
     lateinit var slidingPanelStateHelper: SlidingPanelStateHelper
 
     private lateinit var binding: FragmentDashboardBinding
-    private lateinit var dashboardViewModel: DashboardViewModel
-    private lateinit var homeViewModel: MapViewModel
+    private val dashboardViewModel: DashboardViewModel by viewModels()
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     private val searchFragment get() = childFragmentManager.findFragmentById(R.id.search_fragment_container) as SearchFragment
     private val infoFragment get() = childFragmentManager.findFragmentById(R.id.info_fragment_container) as InfoFragment
@@ -49,11 +50,6 @@ class DashboardFragment : Fragment() {
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,10 +65,14 @@ class DashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        homeViewModel = ViewModelProvider(requireActivity())[MapViewModel::class.java]
-        homeViewModel.focusRouteObservable.observe(viewLifecycleOwner) {
+        mapViewModel.focusRouteObservable.observe(viewLifecycleOwner) {
             it?.let { route ->
                 startNavigation(route)
+            }
+        }
+        mapViewModel.navigationRouteObservable.observe(viewLifecycleOwner) {
+            if (it == null && !mapViewModel.isNavigationIdle) {
+                navigationListener.onStopped()
             }
         }
         showSearch()
@@ -88,18 +88,18 @@ class DashboardFragment : Fragment() {
 //    }
 
     private fun startNavigation(route: Route) {
-        navigationFragment.setTomTomNavigation(homeViewModel.tomTomNavigation)
+        showNavigation()
+        navigationFragment.setTomTomNavigation(mapViewModel.tomTomNavigation)
         val routePlan = RoutePlan(route, IRouteRepository.routePlanningOptions!!)
         navigationFragment.startNavigation(routePlan)
         navigationFragment.addNavigationListener(navigationListener)
-        homeViewModel.startNavigation(route)
-        showNavigation()
+        mapViewModel.startNavigation(route)
     }
 
     private val navigationListener by lazy {
         object : NavigationListener {
             override fun onStarted() {
-                homeViewModel.onNavigationStarted { mode ->
+                mapViewModel.onNavigationStarted { mode ->
                     if (mode == CameraTrackingMode.FollowRouteDirection) {
                         navigationFragment.navigationView.showSpeedView()
                     } else {
@@ -111,7 +111,7 @@ class DashboardFragment : Fragment() {
             override fun onStopped() {
                 navigationFragment.stopNavigation()
                 navigationFragment.removeNavigationListener(this)
-                homeViewModel.onNavigationStopped()
+                mapViewModel.onNavigationStopped()
                 showSearch()
             }
         }

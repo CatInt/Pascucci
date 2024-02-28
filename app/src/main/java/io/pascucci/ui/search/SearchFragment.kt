@@ -1,7 +1,6 @@
 package io.pascucci.ui.search
 
 import android.graphics.PorterDuff
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.tomtom.sdk.vehicle.VehicleType
@@ -26,14 +26,9 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
     lateinit var slidingPanelStateHelper: SlidingPanelStateHelper
 
     private lateinit var binding: FragmentSearchBinding
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModels()
 
     private lateinit var routeTypeButtons: Map<VehicleType, View>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
