@@ -3,12 +3,14 @@ package io.pascucci.data
 import com.tomtom.sdk.location.GeoLocation
 import com.tomtom.sdk.location.LocationProvider
 import com.tomtom.sdk.location.OnLocationUpdateListener
+import timber.log.Timber
 
 abstract class LocationProviderDelegator : LocationProvider {
     abstract val currentProvider: LocationProvider
 
     private val _listeners: MutableList<OnLocationUpdateListener> = mutableListOf()
     private val listener = OnLocationUpdateListener { geo ->
+        Timber.d("OnLocationUpdate $geo")
         _listeners.forEach { it.onLocationUpdate(geo) }
     }
 
@@ -22,16 +24,19 @@ abstract class LocationProviderDelegator : LocationProvider {
         }
     }
 
-    override fun close() = currentProvider.close().also {
+    override fun close() {
         currentProvider.removeOnLocationUpdateListener(listener)
+        currentProvider.close()
     }
 
-    override fun disable() = currentProvider.disable().also {
+    override fun disable() {
         currentProvider.removeOnLocationUpdateListener(listener)
+        currentProvider.disable()
     }
 
-    override fun enable() = currentProvider.enable().also {
+    override fun enable() {
         currentProvider.addOnLocationUpdateListener(listener)
+        currentProvider.enable()
     }
 
     override fun removeOnLocationUpdateListener(listener: OnLocationUpdateListener) {

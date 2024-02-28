@@ -17,15 +17,14 @@ class PascucciLocationProvider @Inject constructor(
 
     fun switch(provider: LocationProvider) {
         val old = currentProvider
-        _current = provider
-        if (currentProvider != old) {
-            if (old == original)
-            {
-                old.disable()
+        if (provider != old) {
+            if (old == original) {
+                disable()
             } else {
-                old.close()
+                close()
             }
-            currentProvider.enable()
+            _current = provider
+            enable()
         }
     }
 }
