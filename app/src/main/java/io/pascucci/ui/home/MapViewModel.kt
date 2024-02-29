@@ -245,7 +245,7 @@ class MapViewModel @Inject internal constructor(
             if (routeAddedReason !is RouteAddedReason.NavigationStarted) {
                 drawRoute(
                     route = route,
-                    color = Color.GRAY,
+                    color = Color.LTGRAY,
                     withDepartureMarker = false
                 )
             }
@@ -263,7 +263,7 @@ class MapViewModel @Inject internal constructor(
     private val activeRouteChangedListener by lazy {
         ActiveRouteChangedListener { route ->
             displayMap.removeRoutes()
-            drawRoute(route)
+            drawRoute(route, Color.GREEN, withDepartureMarker = false)
 //            displayMap.routes.forEach {
 //                if (it.tag == route.id.toString()) {
 //                    it.color = RouteOptions.DEFAULT_COLOR
