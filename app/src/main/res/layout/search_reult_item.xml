@@ -5,7 +5,8 @@
   ~  ********************************************************************************/
   -->
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -23,13 +24,18 @@
         android:layout_height="wrap_content"
         android:onClick="@{clickListener}"
         android:paddingHorizontal="@dimen/list_item_horizontal_padding"
+        android:paddingStart="32dp"
+        android:paddingEnd="24dp"
         android:paddingBottom="@dimen/list_view_vertical_padding">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:contentDescription="@{viewModel.name}" />
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:contentDescription="@{viewModel.name}"
+            android:padding="4dp"
+            android:src="@drawable/ic_direction"
+            app:tint="@color/translucent" />
 
         <TextView
             android:id="@+id/name"
