@@ -76,9 +76,9 @@ class DashboardFragment : Fragment() {
             }
         }
         showSearch()
-        slidingPanelStateHelper.slideOffsetObservable.observe(viewLifecycleOwner) {
-
-        }
+//        slidingPanelStateHelper.slideOffsetObservable.observe(viewLifecycleOwner) {
+//
+//        }
     }
 
 //    private val fragmentOnAttachListener by lazy {

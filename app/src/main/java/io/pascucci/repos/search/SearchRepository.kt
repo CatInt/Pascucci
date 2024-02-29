@@ -7,7 +7,7 @@ import com.tomtom.sdk.location.LocationProvider
 import io.pascucci.AppCoroutineDispatchers
 import io.pascucci.data.Location
 import io.pascucci.repos.AsyncResult
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class SearchRepository(
 //    private val cacheStore: CacheStore,
@@ -23,7 +23,7 @@ class SearchRepository(
     override val destinationsObservable: LiveData<List<Location>>
         get() = _locationsObservable
 
-    override fun search(query: String) {
+    override suspend fun search(query: String) {
 
         if (query.isBlank()) {
             _locationsObservable.postValue(emptyList())
@@ -35,7 +35,7 @@ class SearchRepository(
 //            return cached.map { channelDao.getChannel(it)!! }
 //        }
 
-        runBlocking(dispatchers.io) {
+        withContext(dispatchers.io) {
             searchDataSource.search(query, currentGeoPoint).let { result ->
                 if (result is AsyncResult.Success<List<Location>>) {
                     result.data

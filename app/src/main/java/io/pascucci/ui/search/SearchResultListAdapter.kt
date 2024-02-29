@@ -30,15 +30,9 @@ class SearchResultListAdapter(private val onClick: (Location) -> Unit) :
 class SearchResultViewHolder(
     private val binding: SearchReultItemBinding,
     onClick: (Location) -> Unit
-) :
-    RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     init {
-//        binding.setClickListener { view ->
-//            binding.viewModel?.let {
-//                navigateToLocation(it.location, view)
-//            }
-//        }
         binding.setClickListener {
             onClick(binding.viewModel!!.location)
         }
@@ -47,11 +41,6 @@ class SearchResultViewHolder(
     fun bind(channel: Location?) {
         with(binding) {
             viewModel = SearchResultItemViewModel(channel!!)
-//            Glide.with(image)
-//                .load(channel.image)
-//                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-//                .transition(CrossFade)
-//                .into(image)
         }
     }
 

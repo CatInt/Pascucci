@@ -15,7 +15,9 @@ import com.tomtom.sdk.vehicle.VehicleType
 import io.pascucci.AppCoroutineDispatchers
 import io.pascucci.data.Location
 import io.pascucci.repos.AsyncResult
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class RouteRepository(
@@ -32,11 +34,13 @@ class RouteRepository(
     private val _vehicleTypeObservable = MutableLiveData<VehicleType>()
     override val vehicleTypeObservable: LiveData<VehicleType> = _vehicleTypeObservable
 
-    override fun setVehicleType(type: VehicleType) {
+    override suspend fun setVehicleType(type: VehicleType) {
         val old = vehicleTypeObservable.value
         if (old != type) {
             if (routesObservable.hasObservers() && cache.isValid()) {
-                plan(cache.from!!, cache.to!!, type)
+                CoroutineScope(dispatchers.main).launch {
+                    plan(cache.from!!, cache.to!!, type)
+                }
             } else {
                 internalSetVehicleType(type)
             }
@@ -48,13 +52,13 @@ class RouteRepository(
     }
 
     private var cache = ParamsCache(null, null)
-    override fun plan(from: GeoPoint, to: GeoPoint, type: VehicleType?) {
+    override suspend fun plan(from: GeoPoint, to: GeoPoint, type: VehicleType?) {
         val vehicleType = type ?: vehicleTypeObservable.value ?: VehicleType.Car
         internalSetVehicleType(vehicleType)
         Timber.d("onRouteRepo plan ${Thread.currentThread()}")
         cache.from = from
         cache.to = to
-        runBlocking(dispatchers.io) {
+        withContext(dispatchers.io) {
             Timber.d("onRouteRepo ${Thread.currentThread()}")
             val result = planner.plan(from, to, vehicleType)
             when (result) {

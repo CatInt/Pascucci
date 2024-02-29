@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.tomtom.quantity.Distance
 import com.tomtom.quantity.Speed
 import com.tomtom.sdk.common.UniqueId
@@ -48,6 +49,7 @@ import io.pascucci.data.PascucciLocationProvider
 import io.pascucci.repos.route.IRouteRepository
 import io.pascucci.repos.search.ISearchRepository
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -145,13 +147,14 @@ class MapViewModel @Inject internal constructor(
         displayMap.enableLocationMarker(locationMarker)
     }
 
-    private var _focusRouteObservable = MutableLiveData<Route>()
-    val focusRouteObservable: LiveData<Route> = _focusRouteObservable
+    private var _focusRouteObservable = MutableLiveData<Route?>()
+    val focusRouteObservable: LiveData<Route?> = _focusRouteObservable
 
     private var _navigationRouteObservable = MutableLiveData<Route?>()
     val navigationRouteObservable: LiveData<Route?> = _navigationRouteObservable
 
     fun startNavigation(route: Route) {
+        _focusRouteObservable.postValue(null)
         _navigationRouteObservable.postValue(route)
         bindNavigationToMap()
     }
@@ -207,7 +210,9 @@ class MapViewModel @Inject internal constructor(
         MapLongClickListener { pos ->
             if (isNavigationIdle) {
                 displayMap.clear()
-                routeRepo.plan(currentPos!!, pos, null)
+                viewModelScope.launch {
+                    routeRepo.plan(currentPos!!, pos, null)
+                }
             }
             true
         }
@@ -216,7 +221,9 @@ class MapViewModel @Inject internal constructor(
     private val markerClickListener by lazy {
         MarkerClickListener { marker ->
             if (isNavigationIdle) {
-                routeRepo.plan(currentPos!!, marker.coordinate, null)
+                viewModelScope.launch {
+                    routeRepo.plan(currentPos!!, marker.coordinate, null)
+                }
                 displayMap.removeMarkers()
             }
         }

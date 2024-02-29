@@ -5,5 +5,5 @@ import io.pascucci.data.Location
 
 interface ISearchRepository {
     val destinationsObservable : LiveData<List<Location>>
-    fun search(query: String)
+    suspend fun search(query: String)
 }

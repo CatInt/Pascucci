@@ -11,8 +11,8 @@ interface IRouteRepository {
     val destinationObservable: LiveData<Location>
     val routesObservable: LiveData<List<Route>>
     val vehicleTypeObservable: LiveData<VehicleType>
-    fun plan(from: GeoPoint, to: GeoPoint, type: VehicleType?)
-    fun setVehicleType(type: VehicleType)
+    suspend fun plan(from: GeoPoint, to: GeoPoint, type: VehicleType?)
+    suspend fun setVehicleType(type: VehicleType)
 
     companion object {
         var routePlanningOptions: RoutePlanningOptions? = null

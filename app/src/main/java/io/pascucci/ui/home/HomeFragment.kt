@@ -22,6 +22,7 @@ import timber.log.Timber
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
+    @Suppress("unused")
     private val homeViewModel: HomeViewModel by viewModels()
     private val mapViewModel: MapViewModel by activityViewModels()
 
