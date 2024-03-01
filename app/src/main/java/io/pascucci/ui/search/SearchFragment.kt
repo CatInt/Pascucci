@@ -39,7 +39,6 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
         ).let {
             binding = it
             binding.viewModel = viewModel
-            binding.clickListener = onRouteTypeClickListener
             binding.root
         }
     }
@@ -86,16 +85,6 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
             else -> SlidingUpPanelLayout.PanelState.COLLAPSED
         }
         slidingPanelStateHelper.slidingUpPanelLayout?.panelState = state
-    }
-
-    private val onRouteTypeClickListener by lazy {
-        View.OnClickListener { view ->
-            routeTypeButtons.firstNotNullOf {
-                if (it.value == view) it.key else null
-            }.let { type ->
-                viewModel.setCurrentRouteType(type)
-            }
-        }
     }
 
     companion object {

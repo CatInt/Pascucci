@@ -7,10 +7,6 @@
     <data>
 
         <variable
-            name="clickListener"
-            type="android.view.View.OnClickListener" />
-
-        <variable
             name="viewModel"
             type="io.pascucci.ui.search.SearchViewModel" />
     </data>
@@ -63,7 +59,7 @@
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_orange_light"
                 android:contentDescription="@string/route_type_car"
-                android:onClick="@{clickListener}"
+                android:onClick="@{()-> viewModel.setCurrentRouteType(0)}"
                 android:src="@drawable/ic_car" />
 
             <androidx.appcompat.widget.AppCompatImageButton
@@ -74,7 +70,7 @@
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_green_light"
                 android:contentDescription="@string/route_type_bus"
-                android:onClick="@{clickListener}"
+                android:onClick="@{()-> viewModel.setCurrentRouteType(1)}"
                 android:src="@drawable/ic_bus" />
 
             <androidx.appcompat.widget.AppCompatImageButton
@@ -85,7 +81,7 @@
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_blue_light"
                 android:contentDescription="@string/route_type_bike"
-                android:onClick="@{clickListener}"
+                android:onClick="@{()-> viewModel.setCurrentRouteType(2)}"
                 android:src="@drawable/ic_bike" />
 
             <androidx.appcompat.widget.AppCompatImageButton
@@ -96,7 +92,7 @@
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_purple"
                 android:contentDescription="@string/route_type_walk"
-                android:onClick="@{clickListener}"
+                android:onClick="@{()-> viewModel.setCurrentRouteType(3)}"
                 android:src="@drawable/ic_walk" />
         </GridLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

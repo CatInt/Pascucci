@@ -40,9 +40,10 @@ class SearchViewModel @Inject internal constructor(
         }
     }
 
-    fun setCurrentRouteType(type: VehicleType) {
+    fun setCurrentRouteType(t: Int) {
+        val map = arrayOf(VehicleType.Car, VehicleType.Bus, VehicleType.Bicycle, VehicleType.Pedestrian)
         viewModelScope.launch {
-            routeRepo.setVehicleType(type)
+            routeRepo.setVehicleType(map[t])
         }
     }
 }
