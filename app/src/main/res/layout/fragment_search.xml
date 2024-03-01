@@ -58,6 +58,7 @@
                 android:layout_columnWeight="1"
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_orange_light"
+                android:backgroundTintMode="@{viewModel.carBtnTintMode}"
                 android:contentDescription="@string/route_type_car"
                 android:onClick="@{()-> viewModel.setCurrentRouteType(0)}"
                 android:src="@drawable/ic_car" />
@@ -69,6 +70,7 @@
                 android:layout_columnWeight="1"
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_green_light"
+                android:backgroundTintMode="@{viewModel.busBtnTintMode}"
                 android:contentDescription="@string/route_type_bus"
                 android:onClick="@{()-> viewModel.setCurrentRouteType(1)}"
                 android:src="@drawable/ic_bus" />
@@ -80,6 +82,7 @@
                 android:layout_columnWeight="1"
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_blue_light"
+                android:backgroundTintMode="@{viewModel.bikeBtnTintMode}"
                 android:contentDescription="@string/route_type_bike"
                 android:onClick="@{()-> viewModel.setCurrentRouteType(2)}"
                 android:src="@drawable/ic_bike" />
@@ -91,6 +94,7 @@
                 android:layout_columnWeight="1"
                 android:background="@drawable/rounded_button_background"
                 android:backgroundTint="@android:color/holo_purple"
+                android:backgroundTintMode="@{viewModel.walkBtnTintMode}"
                 android:contentDescription="@string/route_type_walk"
                 android:onClick="@{()-> viewModel.setCurrentRouteType(3)}"
                 android:src="@drawable/ic_walk" />

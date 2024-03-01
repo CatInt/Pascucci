@@ -1,6 +1,5 @@
 package io.pascucci.ui.search
 
-import android.graphics.PorterDuff
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,7 +10,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
-import com.tomtom.sdk.vehicle.VehicleType
 import dagger.hilt.android.AndroidEntryPoint
 import io.pascucci.R
 import io.pascucci.databinding.FragmentSearchBinding
@@ -28,8 +26,6 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
     private lateinit var binding: FragmentSearchBinding
     private val viewModel: SearchViewModel by viewModels()
 
-    private lateinit var routeTypeButtons: Map<VehicleType, View>
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +35,7 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
         ).let {
             binding = it
             binding.viewModel = viewModel
+            binding.lifecycleOwner = viewLifecycleOwner
             binding.root
         }
     }
@@ -59,23 +56,9 @@ class SearchFragment : Fragment(), View.OnFocusChangeListener {
             binding.routeTypeSelection.visibility = View.INVISIBLE
         }
 
-        routeTypeButtons = mapOf(
-            VehicleType.Pedestrian to binding.walk,
-            VehicleType.Bicycle to binding.bike,
-            VehicleType.Bus to binding.bus,
-            VehicleType.Car to binding.car
-        )
-
-        viewModel.vehicleType.observe(viewLifecycleOwner) { type ->
+        viewModel.vehicleType.observe(viewLifecycleOwner) { _ ->
             binding.searchResultView.visibility = View.INVISIBLE
             binding.routeTypeSelection.visibility = View.VISIBLE
-            routeTypeButtons.forEach { (key, v) ->
-                v.backgroundTintMode = if (type == key) {
-                    PorterDuff.Mode.SRC
-                } else {
-                    PorterDuff.Mode.DST
-                }
-            }
         }
     }
 

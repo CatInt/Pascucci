@@ -1,6 +1,8 @@
 package io.pascucci.ui.search
 
+import android.graphics.PorterDuff
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tomtom.sdk.location.LocationProvider
@@ -41,9 +43,27 @@ class SearchViewModel @Inject internal constructor(
     }
 
     fun setCurrentRouteType(t: Int) {
-        val map = arrayOf(VehicleType.Car, VehicleType.Bus, VehicleType.Bicycle, VehicleType.Pedestrian)
+        val map =
+            arrayOf(VehicleType.Car, VehicleType.Bus, VehicleType.Bicycle, VehicleType.Pedestrian)
         viewModelScope.launch {
             routeRepo.setVehicleType(map[t])
         }
     }
+
+    val walkBtnTintMode = createCarBtnMode(VehicleType.Pedestrian)
+    val bikeBtnTintMode = createCarBtnMode(VehicleType.Bicycle)
+    val busBtnTintMode = createCarBtnMode(VehicleType.Bus)
+    val carBtnTintMode = createCarBtnMode(VehicleType.Car)
+
+    private fun createCarBtnMode(expected: VehicleType): LiveData<PorterDuff.Mode> =
+        MediatorLiveData(PorterDuff.Mode.SRC).also {
+            it.addSource(vehicleType) { type ->
+                val mode = if (type == expected) {
+                    PorterDuff.Mode.SRC
+                } else {
+                    PorterDuff.Mode.DST
+                }
+                it.postValue(mode)
+            }
+        }
 }
